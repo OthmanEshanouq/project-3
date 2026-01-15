@@ -2,119 +2,119 @@
 // Bilingual content (English and Arabic)
 
 const contentData = {
-    // Reviews - 11 total (9 five-star, 2 four-star)
+    // Reviews - 11 total (9 five-star, 2 four-star) - All with Arabic names
     reviews: [
         {
-            name: "Ahmed Al-Mansouri",
+            name: "Omar",
             rating: 5,
             text: "Amazing food and excellent service! The buffet has a great variety of Middle Eastern and international dishes. Highly recommended!"
         },
         {
-            name: "Sarah Johnson",
+            name: "Fatimah",
             rating: 5,
             text: "One of the best restaurants in Amman! The atmosphere is cozy and the staff is very friendly. The coffee is exceptional too."
         },
         {
-            name: "Mohammad Hassan",
+            name: "Zaid",
             rating: 5,
             text: "Perfect place for family dinners. The open buffet is fantastic with fresh, delicious food. Will definitely come back!"
         },
         {
-            name: "Layla Ibrahim",
+            name: "Layla",
             rating: 5,
             text: "Great experience! The food quality is outstanding and the prices are reasonable. Love the variety of juices and drinks."
         },
         {
-            name: "David Smith",
+            name: "Ahmad",
             rating: 5,
             text: "Excellent restaurant with authentic flavors. The service was prompt and the ambiance is perfect for both lunch and dinner."
         },
         {
-            name: "Fatima Ali",
+            name: "Mariam",
             rating: 5,
             text: "Best halal restaurant in Khalda! The buffet selection is impressive and everything tastes fresh. Highly satisfied!"
         },
         {
-            name: "Omar Khaled",
+            name: "Yusuf",
             rating: 5,
             text: "Outstanding food and service. The staff goes above and beyond to ensure a great dining experience. Five stars!"
         },
         {
-            name: "Emily Brown",
+            name: "Sara",
             rating: 5,
             text: "Wonderful restaurant! The fusion of local and international flavors is done perfectly. Great value for money."
         },
         {
-            name: "Khalid Abdullah",
+            name: "Khalid",
             rating: 5,
             text: "Exceptional quality and taste. The restaurant is clean, well-maintained, and the food is always fresh. Highly recommended!"
         },
         {
-            name: "Nour Mahmoud",
+            name: "Nour",
             rating: 4,
             text: "Very good restaurant with nice atmosphere. The food is delicious, though I wish there were more dessert options. Overall great experience!"
         },
         {
-            name: "James Wilson",
+            name: "Hassan",
             rating: 4,
             text: "Good food and friendly staff. The location is convenient and the prices are fair. Would visit again for sure."
         }
     ],
 
-    // Reviews in Arabic
+    // Reviews in Arabic - All with Arabic names
     reviewsAr: [
         {
-            name: "أحمد المنصوري",
+            name: "عمر",
             rating: 5,
             text: "طعام رائع وخدمة ممتازة! البوفيه يحتوي على مجموعة رائعة من الأطباق الشرق أوسطية والدولية. أنصح به بشدة!"
         },
         {
-            name: "سارة جونسون",
+            name: "فاطمة",
             rating: 5,
             text: "واحدة من أفضل المطاعم في عمان! الجو مريح والموظفون ودودون جداً. القهوة استثنائية أيضاً."
         },
         {
-            name: "محمد حسن",
+            name: "زيد",
             rating: 5,
             text: "مكان مثالي لعشاء العائلة. البوفيه المفتوح رائع مع طعام طازج ولذيذ. سأعود بالتأكيد!"
         },
         {
-            name: "ليلى إبراهيم",
+            name: "ليلى",
             rating: 5,
             text: "تجربة رائعة! جودة الطعام ممتازة والأسعار معقولة. أحب مجموعة العصائر والمشروبات."
         },
         {
-            name: "ديفيد سميث",
+            name: "أحمد",
             rating: 5,
             text: "مطعم ممتاز بنكهات أصيلة. الخدمة كانت سريعة والجو مثالي للغداء والعشاء."
         },
         {
-            name: "فاطمة علي",
+            name: "مريم",
             rating: 5,
             text: "أفضل مطعم حلال في خلدا! اختيار البوفيه مثير للإعجاب وكل شيء طعمه طازج. راضية جداً!"
         },
         {
-            name: "عمر خالد",
+            name: "يوسف",
             rating: 5,
             text: "طعام وخدمة متميزة. الموظفون يبذلون قصارى جهدهم لضمان تجربة طعام رائعة. خمس نجوم!"
         },
         {
-            name: "إيميلي براون",
+            name: "سارة",
             rating: 5,
             text: "مطعم رائع! اندماج النكهات المحلية والدولية يتم بشكل مثالي. قيمة ممتازة مقابل المال."
         },
         {
-            name: "خالد عبدالله",
+            name: "خالد",
             rating: 5,
             text: "جودة وطعم استثنائيان. المطعم نظيف ومحافظ عليه والطعام دائماً طازج. أنصح به بشدة!"
         },
         {
-            name: "نور محمود",
+            name: "نور",
             rating: 4,
             text: "مطعم جيد جداً بجو لطيف. الطعام لذيذ، رغم أنني أتمنى لو كان هناك المزيد من خيارات الحلويات. تجربة رائعة بشكل عام!"
         },
         {
-            name: "جيمس ويلسون",
+            name: "حسان",
             rating: 4,
             text: "طعام جيد وموظفون ودودون. الموقع مناسب والأسعار عادلة. سأزور مرة أخرى بالتأكيد."
         }

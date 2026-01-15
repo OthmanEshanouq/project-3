@@ -75,3 +75,17 @@ some information about the restaurant
 8 the reservation only on Thursdays, Fridays and Saturdays
 
 9 the reservation start from 1/20/2026
+
+
+
+
+in the header put the Home & about us next to the logo (link the logo with the Home[make it clickable]), & the menu & the contacy in the top right , make language dropdown, light/dark/grey mode make it in one small buttton //
+in the Make a Reservation remove this sentece 'Please select Thursday, Friday, or Saturday'   //
+in the review section make the reviews carousel with arrows right & left out of the box & change the names to Arabic names //
+remove Contact Us section but make the location link with google map when openthe website see the map & a button to the direction
+
+
+
+
+
+header[the light/dark/grey mode make the icon see what is the next mode is(not what is the mode right now) put the Menu & contact in the right side next to the dropdown, make the header 70% transparent, in the dark/grey mode make the navigations colors more visibale to see] the reviews section[make the reviews slide ine by one in every click on the arrow (make the review flex to show all of it)] in the Frequently Asked Questions[make all of the FAQs hide & click on 'Frequently Asked Questions' to show it

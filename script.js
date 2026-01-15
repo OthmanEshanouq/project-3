@@ -27,10 +27,13 @@ function initializeApp() {
     initializeTheme();
     initializeLanguage();
     initializeReservation();
+    initializeCarousel();
+    initializeMobileMenu();
     loadReviews();
     loadFAQ();
     initializeCopyLink();
     initializeSmoothScroll();
+    initializeStickyHeader();
     
     // Set initial theme and language
     applyTheme(currentTheme);
@@ -38,49 +41,74 @@ function initializeApp() {
 }
 
 // ============================================
-// Theme Management
+// Theme Management - Cycle Button
 // ============================================
 
 function initializeTheme() {
-    const themeButtons = document.querySelectorAll('.theme-btn');
+    const themeCycleBtn = document.getElementById('theme-cycle-btn');
+    const themeIcon = document.getElementById('theme-icon');
     
-    themeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const theme = this.getAttribute('data-theme');
-            switchTheme(theme);
+    if (themeCycleBtn) {
+        themeCycleBtn.addEventListener('click', function() {
+            cycleTheme();
         });
-    });
+    }
+    
+    // Set initial icon
+    updateThemeIcon();
+}
+
+function cycleTheme() {
+    const themes = ['light', 'dark', 'grey'];
+    const currentIndex = themes.indexOf(currentTheme);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    const nextTheme = themes[nextIndex];
+    
+    switchTheme(nextTheme);
 }
 
 function switchTheme(theme) {
     currentTheme = theme;
     applyTheme(theme);
+    updateThemeIcon();
     savePreferences();
-    
-    // Update active button
-    document.querySelectorAll('.theme-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.querySelector(`.theme-btn[data-theme="${theme}"]`).classList.add('active');
 }
 
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
 }
 
+function updateThemeIcon() {
+    const themeIcon = document.getElementById('theme-icon');
+    if (themeIcon) {
+        const themes = ['light', 'dark', 'grey'];
+        const currentIndex = themes.indexOf(currentTheme);
+        const nextIndex = (currentIndex + 1) % themes.length;
+        const nextTheme = themes[nextIndex];
+        
+        const icons = {
+            'light': '☀️',
+            'dark': '🌙',
+            'grey': '⚫'
+        };
+        // Show NEXT mode icon, not current
+        themeIcon.textContent = icons[nextTheme] || '⚫';
+    }
+}
+
 // ============================================
-// Language Management
+// Language Management - Dropdown
 // ============================================
 
 function initializeLanguage() {
-    const langButtons = document.querySelectorAll('.lang-btn');
+    const languageSelect = document.getElementById('language-select');
     
-    langButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const lang = this.getAttribute('data-lang');
-            switchLanguage(lang);
+    if (languageSelect) {
+        languageSelect.value = currentLanguage;
+        languageSelect.addEventListener('change', function() {
+            switchLanguage(this.value);
         });
-    });
+    }
 }
 
 function switchLanguage(lang) {
@@ -88,15 +116,17 @@ function switchLanguage(lang) {
     applyLanguage(lang);
     savePreferences();
     
-    // Update active button
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.querySelector(`.lang-btn[data-lang="${lang}"]`).classList.add('active');
+    // Update dropdown
+    const languageSelect = document.getElementById('language-select');
+    if (languageSelect) {
+        languageSelect.value = lang;
+    }
     
     // Reload dynamic content
     loadReviews();
     loadFAQ();
+    // Reset carousel position when language changes
+    resetCarousel();
 }
 
 function applyLanguage(lang) {
@@ -256,9 +286,19 @@ function renderCalendar() {
         if (date < minDate || (dayOfWeek !== 4 && dayOfWeek !== 5 && dayOfWeek !== 6)) {
             dayCell.classList.add('disabled');
         } else {
+            dayCell.classList.add('available');
             dayCell.addEventListener('click', function() {
                 selectDate(date);
             });
+            
+            // Check for scarcity badge (first week Thu/Fri only)
+            const firstWeekEnd = new Date(2026, 0, 27); // End of first week (Jan 27)
+            if (date <= firstWeekEnd && (dayOfWeek === 4 || dayOfWeek === 5)) {
+                const badge = document.createElement('div');
+                badge.className = 'scarcity-badge';
+                badge.textContent = currentLanguage === 'ar' ? 'مقاعد محدودة' : 'Limited Seats';
+                dayCell.appendChild(badge);
+            }
         }
         
         // Highlight selected date
@@ -375,8 +415,46 @@ function clearErrors() {
 }
 
 // ============================================
-// Reviews
+// Reviews Carousel
 // ============================================
+
+let carouselPosition = 0;
+
+function initializeCarousel() {
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function() {
+            scrollCarousel('prev');
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function() {
+            scrollCarousel('next');
+        });
+    }
+    
+    // Touch/swipe support for mobile
+    const carousel = document.getElementById('reviews-container');
+    if (carousel) {
+        let startX = 0;
+        let scrollLeft = 0;
+        
+        carousel.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].pageX - carousel.offsetLeft;
+            scrollLeft = carousel.scrollLeft;
+        });
+        
+        carousel.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            const x = e.touches[0].pageX - carousel.offsetLeft;
+            const walk = (x - startX) * 2;
+            carousel.scrollLeft = scrollLeft - walk;
+        });
+    }
+}
 
 function loadReviews() {
     const reviewsContainer = document.getElementById('reviews-container');
@@ -396,15 +474,59 @@ function loadReviews() {
             </div>
         `;
     }).join('');
+    
+    // Reset carousel position after loading
+    resetCarousel();
+}
+
+function scrollCarousel(direction) {
+    const carousel = document.getElementById('reviews-container');
+    if (!carousel) return;
+    
+    // Get the width of the carousel container
+    const containerWidth = carousel.offsetWidth;
+    
+    if (direction === 'next') {
+        carousel.scrollBy({ left: containerWidth, behavior: 'smooth' });
+    } else {
+        carousel.scrollBy({ left: -containerWidth, behavior: 'smooth' });
+    }
+}
+
+function resetCarousel() {
+    const carousel = document.getElementById('reviews-container');
+    if (carousel) {
+        carousel.scrollLeft = 0;
+    }
 }
 
 // ============================================
-// FAQ
+// FAQ - Double Toggle
 // ============================================
 
 function loadFAQ() {
     const faqContainer = document.getElementById('faq-container');
+    const faqMainTitle = document.getElementById('faq-main-title');
+    
     if (!faqContainer || typeof contentData === 'undefined') return;
+    
+    // Initialize main title click (first toggle - reveal/hide list)
+    if (faqMainTitle) {
+        faqMainTitle.addEventListener('click', function() {
+            const isHidden = faqContainer.classList.contains('hidden');
+            if (isHidden) {
+                faqContainer.classList.remove('hidden');
+                faqMainTitle.classList.add('active');
+            } else {
+                faqContainer.classList.add('hidden');
+                faqMainTitle.classList.remove('active');
+                // Close all FAQ items when hiding
+                faqContainer.querySelectorAll('.faq-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+            }
+        });
+    }
     
     const faqItems = currentLanguage === 'ar' ? contentData.faqAr : contentData.faq;
     
@@ -422,9 +544,10 @@ function loadFAQ() {
         `;
     }).join('');
     
-    // Add click handlers
+    // Add click handlers for individual questions (second toggle - accordion)
     faqContainer.querySelectorAll('.faq-question').forEach((question, index) => {
-        question.addEventListener('click', function() {
+        question.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent triggering parent
             const faqItem = this.closest('.faq-item');
             const isActive = faqItem.classList.contains('active');
             
@@ -487,6 +610,64 @@ function initializeSmoothScroll() {
             }
         });
     });
+}
+
+// ============================================
+// Sticky Header with Scroll Effect
+// ============================================
+
+function initializeStickyHeader() {
+    const header = document.querySelector('.header');
+    if (!header) return;
+    
+    let lastScroll = 0;
+    
+    window.addEventListener('scroll', function() {
+        const currentScroll = window.pageYOffset;
+        
+        if (currentScroll > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+        
+        lastScroll = currentScroll;
+    });
+}
+
+// ============================================
+// Mobile Menu
+// ============================================
+
+function initializeMobileMenu() {
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileNavLinks = mobileMenu?.querySelectorAll('a');
+    
+    if (mobileMenuToggle && mobileMenu) {
+        mobileMenuToggle.addEventListener('click', function() {
+            mobileMenuToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        });
+        
+        // Close menu when clicking on a link
+        if (mobileNavLinks) {
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenuToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                });
+            });
+        }
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!mobileMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                mobileMenuToggle.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            }
+        });
+    }
 }
 
 // ============================================
