@@ -608,8 +608,9 @@ body[dir="rtl"] h2 {
 }
 
 .reservation-step {
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
+    width: 100%;
 }
 
 .reservation-step.hidden {
@@ -731,10 +732,11 @@ body[dir="rtl"] h2 {
     min-width: 44px;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-    font-size: clamp(0.65rem, 1.5vw, 1rem);
+    font-size: clamp(1rem, 2vw, 1.25rem);
     padding: 0.25rem;
     width: 100%;
     max-width: 100%;
+    font-weight: 600;
 }
 
 :root[data-theme="grey"] .calendar-day {
@@ -878,12 +880,15 @@ body[dir="rtl"] .calendar-today-btn {
 }
 
 
-/* Reservation Form */
+/* Reservation Form - High-End Concierge Style */
 .reservation-form {
     background-color: var(--bg-primary);
-    padding: 2rem;
+    padding: 3.5rem;
     border-radius: 10px;
     box-shadow: 0 4px 6px var(--shadow);
+    max-width: 700px;
+    margin: 0 auto;
+    width: 100%;
 }
 
 .form-group {
@@ -900,19 +905,26 @@ body[dir="rtl"] .calendar-today-btn {
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 0.75rem;
-    border: 2px solid var(--border);
+    padding: 1rem;
+    border: 1px solid #D4AF37;
     border-radius: 5px;
     background-color: var(--bg-secondary);
     color: var(--text-primary);
     font-size: 1rem;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+.form-group input::placeholder,
+.form-group select::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
 }
 
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
-    border-color: var(--accent);
+    border-color: #D4AF37;
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
 }
 
 .form-group input.valid {
@@ -973,9 +985,9 @@ body[dir="rtl"] .calendar-today-btn {
     display: none;
     margin-top: 1.5rem;
     padding: 1.5rem;
-    background-color: var(--bg-secondary);
+    background-color: rgba(26, 26, 26, 0.5);
     border-radius: 10px;
-    border: 2px solid var(--border);
+    border: 1px solid #D4AF37;
     animation: slideDown 0.3s ease;
 }
 
@@ -1055,14 +1067,19 @@ body[dir="rtl"] .calendar-today-btn {
 }
 
 .btn-primary {
-    background-color: var(--accent);
-    color: #FFFFFF;
+    background-color: #D4AF37;
+    color: #000000;
+    border: 1px solid #D4AF37;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 .btn-primary:hover {
-    background-color: var(--accent-hover);
+    background-color: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px var(--shadow);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
 }
 
 .btn-secondary {
@@ -1401,22 +1418,81 @@ body[dir="rtl"] .faq-question {
     background-color: var(--bg-secondary);
 }
 
-.menu-image-container {
-    max-width: 1200px;
+.menu-container {
+    max-width: 900px;
     margin: 2rem auto 0;
-    text-align: center;
-    padding: 2rem;
     background-color: var(--bg-primary);
     border-radius: 10px;
     box-shadow: 0 4px 6px var(--shadow);
+    padding: 2rem;
 }
 
-.menu-image {
-    width: 100%;
-    height: auto;
-    max-width: 100%;
-    border-radius: 8px;
-    object-fit: contain;
+/* Menu Tabs */
+.menu-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.menu-tab {
+    padding: 0.75rem 1.5rem;
+    background-color: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    margin-bottom: -2px;
+}
+
+.menu-tab:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.menu-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background-color: transparent;
+}
+
+/* Menu Tab Content */
+.menu-tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.menu-tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Menu Items List */
+.menu-item {
+    display: flex;
+    align-items: baseline;
+    padding: 1rem 0;
+}
+
+.menu-item-name {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 1.1rem;
 }
 
 /* ============================================
@@ -1909,7 +1985,7 @@ body[dir="rtl"]:root[data-theme="grey"] .policy-section {
     }
 
     .calendar-day {
-        font-size: 0.9rem;
+        font-size: 1.1rem;
     }
 }
 
@@ -2019,7 +2095,7 @@ body[dir="rtl"]:root[data-theme="grey"] .policy-section {
     }
 
     .calendar-day {
-        font-size: 0.7rem;
+        font-size: 0.9rem;
         min-height: 44px;
         min-width: 44px;
         padding: 0.2rem;
@@ -2054,6 +2130,23 @@ body[dir="rtl"]:root[data-theme="grey"] .policy-section {
     .btn-secondary {
         width: 100%;
     }
+
+    /* Menu Mobile Styles */
+    .menu-container {
+        padding: 1.5rem;
+    }
+
+    .menu-tabs {
+        gap: 0.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .menu-tab {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .menu-item-name,
 }
 
 @media (max-width: 480px) {
@@ -2103,7 +2196,7 @@ body[dir="rtl"]:root[data-theme="grey"] .policy-section {
     }
 
     .calendar-day {
-        font-size: 0.65rem;
+        font-size: 0.85rem;
         min-height: 40px;
         min-width: 40px;
         padding: 0.15rem;
@@ -2268,7 +2361,7 @@ body[dir="rtl"] .policies-modal-header h2 {
     }
 
     .calendar-day {
-        font-size: 0.6rem;
+        font-size: 0.8rem;
         min-height: 36px;
         min-width: 36px;
         padding: 0.1rem;
@@ -2328,7 +2421,7 @@ body[dir="rtl"] .policies-modal-header h2 {
     }
 
     .calendar-day {
-        font-size: 0.7rem;
+        font-size: 0.85rem;
         min-height: 38px;
         min-width: 38px;
         padding: 0.15rem;
@@ -2360,7 +2453,7 @@ body[dir="rtl"] .policies-modal-header h2 {
     }
 
     .calendar-day {
-        font-size: 0.65rem;
+        font-size: 0.75rem;
         min-height: 36px;
         min-width: 36px;
     }

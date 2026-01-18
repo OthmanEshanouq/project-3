@@ -309,5 +309,97 @@ const contentData = {
                 content: "كل ما يُقدم في حلاوة معتمد 100% حلال."
             }
         }
+    },
+    
+    // Menu Items - Tabbed Menu Layout
+    menuItems: {
+        "main-dishes": {
+            en: [
+                { name: "Mansaf", price: "12 JOD" },
+                { name: "Maqluba", price: "11 JOD" },
+                { name: "Kabsa", price: "11 JOD" },
+                { name: "Grilled Chicken", price: "9 JOD" },
+                { name: "Shish Tawook", price: "10 JOD" },
+                { name: "Mixed Grill", price: "14 JOD" },
+                { name: "Kebab", price: "10 JOD" },
+                { name: "Fattet Hummus", price: "8 JOD" },
+                { name: "Musakhan", price: "10 JOD" },
+                { name: "Kibbeh", price: "9 JOD" },
+                { name: "Chicken Biryani", price: "11 JOD" },
+                { name: "Lamb Chops", price: "15 JOD" }
+            ],
+            ar: [
+                { name: "منسف", price: "12 دينار" },
+                { name: "مقلوبة", price: "11 دينار" },
+                { name: "كبسة", price: "11 دينار" },
+                { name: "دجاج مشوي", price: "9 دينار" },
+                { name: "شيش طاووق", price: "10 دينار" },
+                { name: "مشاوي مشكلة", price: "14 دينار" },
+                { name: "كبة", price: "10 دينار" },
+                { name: "فتة حمص", price: "8 دينار" },
+                { name: "مسخن", price: "10 دينار" },
+                { name: "كبة", price: "9 دينار" },
+                { name: "برياني دجاج", price: "11 دينار" },
+                { name: "كباب الضلع", price: "15 دينار" }
+            ]
+        },
+        "drinks": {
+            en: [
+                { name: "Espresso", price: "2 JOD" },
+                { name: "Cappuccino", price: "3 JOD" },
+                { name: "Latte", price: "3 JOD" },
+                { name: "Turkish Coffee", price: "2.5 JOD" },
+                { name: "Arabic Coffee", price: "2.5 JOD" },
+                { name: "Fresh Orange Juice", price: "4 JOD" },
+                { name: "Fresh Lemonade", price: "4 JOD" },
+                { name: "Fresh Pomegranate Juice", price: "5 JOD" },
+                { name: "Fresh Carrot Juice", price: "4 JOD" },
+                { name: "Mint Lemonade", price: "4.5 JOD" },
+                { name: "Soda", price: "1.5 JOD" },
+                { name: "Mineral Water", price: "1 JOD" }
+            ],
+            ar: [
+                { name: "إسبريسو", price: "2 دينار" },
+                { name: "كابتشينو", price: "3 دينار" },
+                { name: "لاتيه", price: "3 دينار" },
+                { name: "قهوة تركية", price: "2.5 دينار" },
+                { name: "قهوة عربية", price: "2.5 دينار" },
+                { name: "عصير برتقال طازج", price: "4 دينار" },
+                { name: "ليموناضة طازجة", price: "4 دينار" },
+                { name: "عصير رمان طازج", price: "5 دينار" },
+                { name: "عصير جزر طازج", price: "4 دينار" },
+                { name: "ليموناضة بالنعناع", price: "4.5 دينار" },
+                { name: "مشروب غازي", price: "1.5 دينار" },
+                { name: "مياه معدنية", price: "1 دينار" }
+            ]
+        },
+        "desserts": {
+            en: [
+                { name: "Knafeh", price: "6 JOD" },
+                { name: "Baklava", price: "5 JOD" },
+                { name: "Basbousa", price: "4 JOD" },
+                { name: "Umm Ali", price: "4.5 JOD" },
+                { name: "Mahalabia", price: "3.5 JOD" },
+                { name: "Rice Pudding", price: "3.5 JOD" },
+                { name: "Qatayef", price: "5 JOD" },
+                { name: "Halawah", price: "4 JOD" },
+                { name: "Chocolate Cake", price: "5.5 JOD" },
+                { name: "Cheesecake", price: "6 JOD" },
+                { name: "Ice Cream (3 scoops)", price: "4 JOD" }
+            ],
+            ar: [
+                { name: "كنافة", price: "6 دينار" },
+                { name: "بقلاوة", price: "5 دينار" },
+                { name: "بسبوسة", price: "4 دينار" },
+                { name: "أم علي", price: "4.5 دينار" },
+                { name: "مهلبية", price: "3.5 دينار" },
+                { name: "أرز بالحليب", price: "3.5 دينار" },
+                { name: "قطايف", price: "5 دينار" },
+                { name: "حلاوة", price: "4 دينار" },
+                { name: "كيك شوكولاتة", price: "5.5 دينار" },
+                { name: "كيك الجبن", price: "6 دينار" },
+                { name: "آيس كريم (3 كرات)", price: "4 دينار" }
+            ]
+        }
     }
 };

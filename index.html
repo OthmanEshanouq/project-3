@@ -46,6 +46,7 @@
         <div class="mobile-menu" id="mobile-menu">
             <ul class="mobile-nav-links">
                 <li><a href="#menu" data-en="Menu" data-ar="القائمة">Menu</a></li>
+                <li><a href="#about" data-en="About Us" data-ar="من نحن">About Us</a></li>
                 <li><a href="#location" data-en="Contact" data-ar="اتصل بنا">Contact</a></li>
             </ul>
         </div>
@@ -224,27 +225,27 @@
         </div>
     </section>
 
-    <!-- FAQ Section -->
-    <section id="faq" class="section faq-section">
-        <div class="container">
-            <div class="faq-title-wrapper">
-                <h2 class="section-title faq-main-title" id="faq-main-title" data-en="Frequently Asked Questions" data-ar="الأسئلة الشائعة">Frequently Asked Questions</h2>
-                <button class="faq-toggle-btn" id="faq-toggle-btn" aria-label="Toggle FAQ">
-                    <span>▼</span>
-                </button>
-            </div>
-            <div class="faq-container hidden" id="faq-container">
-                <!-- FAQ items will be loaded from content.js -->
-            </div>
-        </div>
-    </section>
-
     <!-- Menu Section -->
     <section id="menu" class="section menu-section">
         <div class="container">
             <h2 class="section-title" data-en="Our Menu" data-ar="قائمتنا">Our Menu</h2>
-            <div class="menu-image-container">
-                <img src="assets/halawah's menu 1.png" alt="Halawah Menu" class="menu-image">
+            <div class="menu-container">
+                <div class="menu-tabs">
+                    <button class="menu-tab active" data-tab="main-dishes" data-en="Main Dishes" data-ar="الأطباق الرئيسية">Main Dishes</button>
+                    <button class="menu-tab" data-tab="drinks" data-en="Drinks" data-ar="المشروبات">Drinks</button>
+                    <button class="menu-tab" data-tab="desserts" data-en="Desserts" data-ar="الحلويات">Desserts</button>
+                </div>
+                <div class="menu-content">
+                    <div class="menu-tab-content active" id="main-dishes-content">
+                        <!-- Menu items will be loaded from content.js -->
+                    </div>
+                    <div class="menu-tab-content" id="drinks-content">
+                        <!-- Menu items will be loaded from content.js -->
+                    </div>
+                    <div class="menu-tab-content" id="desserts-content">
+                        <!-- Menu items will be loaded from content.js -->
+                    </div>
+                </div>
             </div>
         </div>
     </section>

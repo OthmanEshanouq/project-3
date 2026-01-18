@@ -31,6 +31,7 @@ function initializeApp() {
     initializeMobileMenu();
     loadReviews();
     loadFAQ();
+    initializeMenu();
     initializeSocialSharing();
     initializeSmoothScroll();
     initializeStickyHeader();
@@ -130,6 +131,7 @@ function switchLanguage(lang) {
     // Reload dynamic content
     loadReviews();
     loadFAQ();
+    loadMenu(); // Reload menu with new language
     renderCalendar(); // Regenerate calendar with new language
     // Reset carousel position when language changes
     resetCarousel();
@@ -620,6 +622,20 @@ function selectDate(date) {
     renderCalendar();
     showReservationStep(2);
     
+    // Scroll to reservation section when date is selected
+    setTimeout(() => {
+        const reservationSection = document.getElementById('reservation');
+        if (reservationSection) {
+            reservationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Focus on full-name input field after scrolling
+        const fullNameInput = document.getElementById('full-name');
+        if (fullNameInput) {
+            fullNameInput.focus();
+        }
+    }, 150);
+    
     // Show reservation info (cost and capacity)
     const reservationInfo = document.getElementById('reservation-info');
     if (reservationInfo) {
@@ -890,6 +906,14 @@ function handleReservationSubmit(e) {
         showReservationStep(3);
         updateThankYouMessage(paymentMethod);
         
+        // Scroll to reservation section to show the thank you message
+        setTimeout(() => {
+            const reservationSection = document.getElementById('reservation');
+            if (reservationSection) {
+                reservationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+        
         // Log reservation (in real app, send to server)
         console.log('Reservation submitted:', {
             name: fullName,
@@ -1122,6 +1146,73 @@ function loadFAQ() {
                 faqItem.classList.add('active');
             }
         });
+    });
+}
+
+// ============================================
+// Menu Tabbed Layout Functionality
+// ============================================
+
+function initializeMenu() {
+    // Initialize tab switching
+    const menuTabs = document.querySelectorAll('.menu-tab');
+    
+    menuTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+            switchMenuTab(targetTab);
+        });
+    });
+    
+    // Load initial menu content
+    loadMenu();
+}
+
+function switchMenuTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.menu-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.getAttribute('data-tab') === tabName) {
+            tab.classList.add('active');
+        }
+    });
+    
+    // Update tab content
+    document.querySelectorAll('.menu-tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    const targetContent = document.getElementById(`${tabName}-content`);
+    if (targetContent) {
+        targetContent.classList.add('active');
+    }
+}
+
+function loadMenu() {
+    if (typeof contentData === 'undefined' || !contentData.menuItems) return;
+    
+    // Get menu items for current language
+    const menuData = {
+        'main-dishes': currentLanguage === 'ar' ? contentData.menuItems['main-dishes'].ar : contentData.menuItems['main-dishes'].en,
+        'drinks': currentLanguage === 'ar' ? contentData.menuItems['drinks'].ar : contentData.menuItems['drinks'].en,
+        'desserts': currentLanguage === 'ar' ? contentData.menuItems['desserts'].ar : contentData.menuItems['desserts'].en
+    };
+    
+    // Load content for each tab
+    Object.keys(menuData).forEach(tabName => {
+        const contentContainer = document.getElementById(`${tabName}-content`);
+        if (!contentContainer) return;
+        
+        const items = menuData[tabName];
+        if (!items || items.length === 0) return;
+        
+        contentContainer.innerHTML = items.map(item => {
+            return `
+                <div class="menu-item">
+                    <span class="menu-item-name">${item.name}</span>
+                </div>
+            `;
+        }).join('');
     });
 }
 
