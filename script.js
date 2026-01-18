@@ -201,17 +201,30 @@ function initializeReservation() {
     // Initialize calendar
     renderCalendar();
     
-    // Calendar navigation - Only show January 2026 (one month only)
+    // Calendar navigation - Enable month navigation
     const prevMonthBtn = document.getElementById('prev-month');
     const nextMonthBtn = document.getElementById('next-month');
     
-    // Disable navigation buttons since we only show one month
+    // Enable navigation buttons
     if (prevMonthBtn) {
-        prevMonthBtn.style.display = 'none';
+        prevMonthBtn.addEventListener('click', function() {
+            changeMonth(-1);
+        });
+        // Hide prev button if we're at the start date (January 2026)
+        updateNavigationButtons();
     }
+    
     if (nextMonthBtn) {
-        nextMonthBtn.style.display = 'none';
+        nextMonthBtn.addEventListener('click', function() {
+            changeMonth(1);
+        });
     }
+    
+    // Initialize swipe gestures for mobile calendar
+    initializeCalendarSwipe();
+    
+    // Initialize Today button for mobile
+    initializeTodayButton();
     
     // Form submission
     const reservationForm = document.getElementById('reservation-form');
@@ -234,21 +247,37 @@ function initializeReservation() {
     }
     
     // Dynamic price calculation
+    // Price: 20 JOD per person
+    const PRICE_PER_PERSON = 20;
+    const MAX_SEATS = 200;
+    
     const peopleInput = document.getElementById('people');
     if (peopleInput) {
         peopleInput.addEventListener('input', function() {
-            const peopleCount = parseInt(this.value);
-            if (peopleCount > 0 && peopleCount <= 10) {
-                const totalPrice = peopleCount * 20;
+            const peopleCount = parseInt(this.value) || 0;
+            if (peopleCount > 0 && peopleCount <= MAX_SEATS) {
+                // Calculate total price: number of people × 20 JOD
+                const totalPrice = peopleCount * PRICE_PER_PERSON;
                 const priceDisplay = document.getElementById('reservation-price-display');
                 if (priceDisplay) {
                     priceDisplay.textContent = currentLanguage === 'ar' 
                         ? `السعر الإجمالي: ${totalPrice} دينار`
                         : `Total Price: ${totalPrice} JOD`;
+                    // Reset color to default
+                    priceDisplay.style.color = '';
                 }
                 reservationInfo.classList.remove('hidden');
             } else if (peopleCount === 0 || !peopleCount) {
                 reservationInfo.classList.add('hidden');
+            } else if (peopleCount > MAX_SEATS) {
+                // Show error if exceeds maximum
+                const priceDisplay = document.getElementById('reservation-price-display');
+                if (priceDisplay) {
+                    priceDisplay.textContent = currentLanguage === 'ar' 
+                        ? `الحد الأقصى: ${MAX_SEATS} مقعد`
+                        : `Maximum: ${MAX_SEATS} seats`;
+                    priceDisplay.style.color = '#e74c3c';
+                }
             }
         });
     }
@@ -374,9 +403,20 @@ function renderCalendar() {
     
     if (!calendarGrid) return;
     
-    // Only show January 2026 (one month only)
-    currentMonth = 0; // January
-    currentYear = 2026;
+    // Reservation period: January 20, 2026 to February 20, 2026 only
+    // Clamp to allowed months
+    const minMonth = 0; // January
+    const maxMonth = 1; // February
+    const minYear = 2026;
+    const maxYear = 2026;
+    
+    if (currentYear < minYear || (currentYear === minYear && currentMonth < minMonth)) {
+        currentYear = minYear;
+        currentMonth = minMonth;
+    } else if (currentYear > maxYear || (currentYear === maxYear && currentMonth > maxMonth)) {
+        currentYear = maxYear;
+        currentMonth = maxMonth;
+    }
     
     // Get month name
     const monthNames = currentLanguage === 'ar' 
@@ -399,13 +439,17 @@ function renderCalendar() {
     // Clear calendar
     calendarGrid.innerHTML = '';
     
-    // Add day headers
-    dayNames.forEach(day => {
-        const dayHeader = document.createElement('div');
-        dayHeader.className = 'calendar-day-header';
-        dayHeader.textContent = day;
-        calendarGrid.appendChild(dayHeader);
-    });
+    // Add day headers to separate weekdays container
+    const weekdaysContainer = document.getElementById('calendar-weekdays');
+    if (weekdaysContainer) {
+        weekdaysContainer.innerHTML = '';
+        dayNames.forEach(day => {
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'calendar-day-header';
+            dayHeader.textContent = day;
+            weekdaysContainer.appendChild(dayHeader);
+        });
+    }
     
     // Add empty cells for days before month starts
     for (let i = 0; i < firstDay; i++) {
@@ -421,19 +465,33 @@ function renderCalendar() {
         dayCell.className = 'calendar-day';
         dayCell.textContent = day;
         
-        // Check if date is valid (Thursday, Friday, or Saturday, starting from Jan 20, 2026)
+        // Check if date is valid
+        // Reservation period: January 20, 2026 to February 20, 2026
+        // Only Thursday, Friday, or Saturday are available
         const minDate = new Date(2026, 0, 20); // January 20, 2026
+        const maxDate = new Date(2026, 1, 20); // February 20, 2026
         const dayOfWeek = date.getDay(); // 0 = Sunday, 4 = Thursday, 5 = Friday, 6 = Saturday
         
-        if (date < minDate || (dayOfWeek !== 4 && dayOfWeek !== 5 && dayOfWeek !== 6)) {
+        // Check if date is within reservation period AND is Thu/Fri/Sat
+        const isWithinPeriod = date >= minDate && date <= maxDate;
+        const isAvailableDay = dayOfWeek === 4 || dayOfWeek === 5 || dayOfWeek === 6;
+        
+        if (!isWithinPeriod || !isAvailableDay) {
             // Disable but still show the day
             dayCell.classList.add('disabled');
         } else {
             // Available for selection
             dayCell.classList.add('available');
-            dayCell.addEventListener('click', function() {
+            
+            // Use both click and touch events for better mobile support
+            const handleDateSelection = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
                 selectDate(date);
-            });
+            };
+            
+            dayCell.addEventListener('click', handleDateSelection);
+            dayCell.addEventListener('touchend', handleDateSelection, { passive: false });
             
             // Check for scarcity badge (first week Thu/Fri only)
             const firstWeekEnd = new Date(2026, 0, 27); // End of first week (Jan 27)
@@ -458,6 +516,102 @@ function renderCalendar() {
         }
         
         calendarGrid.appendChild(dayCell);
+    }
+}
+
+/**
+ * Change the calendar month
+ * @param {number} direction - 1 for next month, -1 for previous month
+ */
+function changeMonth(direction) {
+    // Reservation period: January 20, 2026 to February 20, 2026 only
+    const minMonth = 0; // January
+    const maxMonth = 1; // February
+    const minYear = 2026;
+    const maxYear = 2026;
+    
+    const newMonth = currentMonth + direction;
+    let canNavigate = false;
+    
+    // Check if navigation is allowed
+    if (direction === -1) {
+        // Going back - only allow if not at minimum (January 2026)
+        canNavigate = !(currentMonth === minMonth && currentYear === minYear);
+    } else if (direction === 1) {
+        // Going forward - only allow if not at maximum (February 2026)
+        canNavigate = !(currentMonth === maxMonth && currentYear === maxYear);
+    }
+    
+    if (canNavigate) {
+        // Handle month boundaries within the allowed range
+        if (newMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        } else if (newMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        } else {
+            currentMonth = newMonth;
+        }
+        
+        // Clamp to allowed range (shouldn't happen, but safety check)
+        if (currentYear < minYear || (currentYear === minYear && currentMonth < minMonth)) {
+            currentYear = minYear;
+            currentMonth = minMonth;
+        } else if (currentYear > maxYear || (currentYear === maxYear && currentMonth > maxMonth)) {
+            currentYear = maxYear;
+            currentMonth = maxMonth;
+        }
+        
+        // Update navigation buttons state
+        updateNavigationButtons();
+        
+        // Re-render calendar
+        renderCalendar();
+    }
+}
+
+/**
+ * Update navigation buttons visibility/enabled state
+ * Reservation period: January 20, 2026 to February 20, 2026 only
+ */
+function updateNavigationButtons() {
+    const prevMonthBtn = document.getElementById('prev-month');
+    const nextMonthBtn = document.getElementById('next-month');
+    
+    // Reservation period boundaries
+    const minMonth = 0; // January
+    const maxMonth = 1; // February
+    const minYear = 2026;
+    const maxYear = 2026;
+    
+    const isAtMin = currentMonth === minMonth && currentYear === minYear;
+    const isAtMax = currentMonth === maxMonth && currentYear === maxYear;
+    
+    // Disable prev button if at minimum (January 2026)
+    if (prevMonthBtn) {
+        if (isAtMin) {
+            prevMonthBtn.disabled = true;
+            prevMonthBtn.style.opacity = '0.5';
+            prevMonthBtn.style.cursor = 'not-allowed';
+        } else {
+            prevMonthBtn.disabled = false;
+            prevMonthBtn.style.opacity = '1';
+            prevMonthBtn.style.cursor = 'pointer';
+        }
+    }
+    
+    // Disable next button if at maximum (February 2026)
+    if (nextMonthBtn) {
+        if (isAtMax) {
+            nextMonthBtn.disabled = true;
+            nextMonthBtn.style.opacity = '0.5';
+            nextMonthBtn.style.cursor = 'not-allowed';
+        } else {
+            nextMonthBtn.disabled = false;
+            nextMonthBtn.style.opacity = '1';
+            nextMonthBtn.style.cursor = 'pointer';
+        }
     }
 }
 
@@ -499,6 +653,149 @@ function showReservationStep(step) {
     }
 }
 
+// ============================================
+// Calendar Mobile Enhancements
+// ============================================
+
+/**
+ * Initialize swipe gesture support for calendar navigation
+ * Supports touch devices with left/right swipe gestures
+ */
+function initializeCalendarSwipe() {
+    const calendarContainer = document.querySelector('.calendar-container');
+    if (!calendarContainer) return;
+    
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const swipeThreshold = 50; // Minimum swipe distance in pixels
+    
+    // Touch event handlers
+    calendarContainer.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    calendarContainer.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+    
+    function handleSwipe() {
+        const swipeDistance = touchEndX - touchStartX;
+        
+        // Swipe right (next) - Note: In RTL, this would be reversed
+        if (swipeDistance < -swipeThreshold) {
+            // Since we only show one month, swipe doesn't navigate
+            // But we can provide visual feedback
+            if (window.innerWidth <= 768) {
+                showSwipeFeedback('right');
+            }
+        }
+        // Swipe left (previous)
+        else if (swipeDistance > swipeThreshold) {
+            if (window.innerWidth <= 768) {
+                showSwipeFeedback('left');
+            }
+        }
+    }
+    
+    function showSwipeFeedback(direction) {
+        const calendarGrid = document.getElementById('calendar-grid');
+        if (!calendarGrid) return;
+        
+        // Add visual feedback
+        calendarGrid.style.transform = direction === 'right' ? 'translateX(-5px)' : 'translateX(5px)';
+        calendarGrid.style.transition = 'transform 0.2s ease';
+        
+        setTimeout(() => {
+            calendarGrid.style.transform = 'translateX(0)';
+        }, 200);
+    }
+}
+
+/**
+ * Initialize Today button functionality
+ * Scrolls to today's date or first available date in the calendar
+ */
+function initializeTodayButton() {
+    const todayBtn = document.getElementById('calendar-today-btn');
+    if (!todayBtn) return;
+    
+    // Update button text based on language
+    function updateTodayButtonText() {
+        const todayText = todayBtn.querySelector('span');
+        if (todayText) {
+            if (currentLanguage === 'ar') {
+                todayText.textContent = 'اليوم';
+            } else {
+                todayText.textContent = 'Today';
+            }
+        }
+    }
+    
+    // Update on language change - listen to document attribute changes
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && 
+                (mutation.attributeName === 'dir' || mutation.attributeName === 'lang')) {
+                updateTodayButtonText();
+            }
+        });
+    });
+    
+    observer.observe(document.documentElement, { 
+        attributes: true, 
+        attributeFilter: ['dir', 'lang'] 
+    });
+    updateTodayButtonText();
+    
+    // Handle click/tap
+    todayBtn.addEventListener('click', function() {
+        scrollToFirstAvailableDate();
+    });
+    
+    // Also handle touch events for better mobile support
+    todayBtn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        scrollToFirstAvailableDate();
+    });
+    
+    function scrollToFirstAvailableDate() {
+        const calendarGrid = document.getElementById('calendar-grid');
+        if (!calendarGrid) return;
+        
+        // Find first available date
+        const availableDays = calendarGrid.querySelectorAll('.calendar-day.available');
+        if (availableDays.length > 0) {
+            // Scroll to first available date
+            availableDays[0].scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center',
+                inline: 'center'
+            });
+            
+            // Add visual highlight
+            availableDays[0].style.transform = 'scale(1.1)';
+            availableDays[0].style.transition = 'transform 0.3s ease';
+            
+            setTimeout(() => {
+                availableDays[0].style.transform = 'scale(1)';
+            }, 500);
+        }
+    }
+    
+    // Show/hide button based on screen size
+    function handleResize() {
+        if (window.innerWidth <= 768) {
+            todayBtn.style.display = 'flex';
+        } else {
+            todayBtn.style.display = 'none';
+        }
+    }
+    
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial check
+}
+
 function handleReservationSubmit(e) {
     e.preventDefault();
     
@@ -532,6 +829,16 @@ function handleReservationSubmit(e) {
     if (!people) {
         showError('people-error', currentLanguage === 'ar' ? 'يرجى اختيار عدد الأشخاص' : 'Please select number of people');
         isValid = false;
+    } else {
+        const peopleCount = parseInt(people);
+        const MAX_SEATS = 200;
+        if (peopleCount < 1) {
+            showError('people-error', currentLanguage === 'ar' ? 'عدد الأشخاص يجب أن يكون على الأقل 1' : 'Number of people must be at least 1');
+            isValid = false;
+        } else if (peopleCount > MAX_SEATS) {
+            showError('people-error', currentLanguage === 'ar' ? `الحد الأقصى هو ${MAX_SEATS} مقعد` : `Maximum is ${MAX_SEATS} seats`);
+            isValid = false;
+        }
     }
     
     const mealTime = document.getElementById('meal-time').value;
